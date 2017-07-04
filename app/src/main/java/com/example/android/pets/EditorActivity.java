@@ -42,7 +42,7 @@ import com.example.android.pets.data.PetContract.PetEntry;
  */
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int EXISTING_PET_LOADER = -1;
+    private static final int EXISTING_PET_LOADER = 0;
 
     /**
      * Content URI for the existing pet (null if it's a new pet)
@@ -89,11 +89,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (currentPetUri == null) {
             // new pet
             setTitle(getString(R.string.editor_activity_title_new_pet));
-        } else
+        } else {
             // edit existing pet
             setTitle(getString(R.string.editor_activity_title_edit_pet));
-
-        getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
+            getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
+        }
 
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_pet_name);

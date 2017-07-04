@@ -32,7 +32,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     // adapter to display the list of pets
     PetCursorAdapter petAdapter;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -40,7 +39,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         setContentView(R.layout.activity_catalog);
 
         // Setup FAB to open EditorActivity
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
 
@@ -72,8 +70,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 Intent editText = new Intent(CatalogActivity.this, EditorActivity.class);
-                Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
-                editText.setData(currentPetUri);
+                Uri petUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+                editText.setData(petUri);
                 startActivity(editText);
             }
         });
@@ -95,7 +93,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     }
 
-    private void insertPet() {
+    private void savePet() {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -120,7 +118,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             // Respond to a click on the "Insert dummy data" menu option
             case R.id.action_insert_dummy_data:
 
-                insertPet();
+                savePet();
                 return true;
 
             // Respond to a click on the "Delete all entries" menu option
@@ -136,7 +134,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     // Called when a new Loader needs to be created
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // The columns from the database to use
         String[] projection = {
                 PetEntry._ID,
