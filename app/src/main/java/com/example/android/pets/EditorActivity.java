@@ -152,7 +152,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String nameString = mNameEditText.getText().toString().trim();
         String breedString = mBreedEditText.getText().toString().trim();
         String weightString = mWeightEditText.getText().toString().trim();
-        int weight = Integer.parseInt(weightString);
+
+        // Check if the values are empty, and if true - return
+        if (currentPetUri == null &&
+                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(breedString) &&
+                TextUtils.isEmpty(weightString) && mGender == PetEntry.GENDER_UNKNOWN) {
+            return;
+        }
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
@@ -160,6 +166,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_NAME, nameString);
         values.put(PetEntry.COLUMN_PET_BREED, breedString);
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
+        // set weight to zero if no weight specified
+        int weight = 0;
+        if (!TextUtils.isEmpty(weightString)) {
+            weight = Integer.parseInt(weightString);
+        }
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
         // Check if we are editing an existing pet, or creating a new one
