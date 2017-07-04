@@ -42,12 +42,12 @@ import com.example.android.pets.data.PetContract.PetEntry;
  */
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int EXISTING_PET_LOADER = 0;
+    private static final int EXISTING_PET_LOADER = -1;
 
     /**
      * Content URI for the existing pet (null if it's a new pet)
      */
-    private Uri currentPetUri = null;
+    private Uri currentPetUri;
 
     /**
      * EditText field to enter the pet's name
@@ -83,7 +83,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         // check if intent used to launch activity is editing existing pet or creating a new one
         Intent editText = getIntent();
-        Uri currentPetUri = editText.getData();
+        currentPetUri = editText.getData();
 
         // if there is no URI, we are creating a new pet
         if (currentPetUri == null) {
@@ -146,7 +146,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Get user input from editor and save new pet into database.
      */
-    private void insertPet() {
+    private void savePet() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -162,19 +162,33 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_GENDER, mGender);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
-        // Insert a new row for Toto into the provider using the ContentResolver.
-        // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
-        // into the pets database table.
-        // Receive the new content URI that will allow us to access Toto's data in the future.
-        Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        // Check if we are editing an existing pet, or creating a new one
+        if (currentPetUri != null) {
+            // save existing pet - update URI with new ContentValues
+            int rowsAffected = getContentResolver().update(currentPetUri, values, null, null);
+            if (rowsAffected != 0) {
+                // Toast message showing the edit has been saved
+                Toast.makeText(this, R.string.pet_edit_successful, Toast.LENGTH_SHORT).show();
+            } else {
+                // Toast message showing the edit has not been saved
+                Toast.makeText(this, R.string.pet_save_unsuccessful, Toast.LENGTH_SHORT).show();
+            }
 
-        // Show a toast message depending on whether or not the insertion was successful
-        if (newUri == null) {
-            // If the row ID is -1, then there was an error with insertion.
-            Toast.makeText(this, R.string.pet_save_unsuccessful, Toast.LENGTH_SHORT).show();
         } else {
-            // Otherwise, the insertion was successful and we can display a toast with the row ID.
-            Toast.makeText(this, R.string.pet_save_successful, Toast.LENGTH_SHORT).show();
+            // Insert a new pet into the provider using the ContentResolver.
+            // Use the {@link PetEntry#CONTENT_URI} to indicate that we want to insert
+            // into the pets database table.
+            // Receive the new content URI that will allow us to access this pet's data in the future.
+            Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+
+            // Show a toast message depending on whether or not the insertion was successful
+            if (newUri == null) {
+                // If the row ID is -1, then there was an error with insertion.
+                Toast.makeText(this, R.string.pet_save_unsuccessful, Toast.LENGTH_SHORT).show();
+            } else {
+                // Otherwise, the insertion was successful and we can display a toast with the row ID.
+                Toast.makeText(this, R.string.pet_save_successful, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -193,7 +207,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save pet to database
-                insertPet();
+                savePet();
                 // Exit activity
                 finish();
                 return true;

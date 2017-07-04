@@ -62,7 +62,8 @@
     <string name="gender_female">Female</string>
 
     <!-- error messages for entering pet data -->
-    <string name="pet_save_successful">Pet Saved!</string>
+    <string name="pet_save_successful">New pet saved!</string>
+    <string name="pet_edit_successful">Pet details updated!</string>
     <string name="pet_save_unsuccessful">Pet not Saved  - please try again!</string>
 
     <!-- Title text for the empty view, which describes the empty dog house image [CHAR LIMIT=50] -->
